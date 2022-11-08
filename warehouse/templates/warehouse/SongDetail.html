@@ -1,0 +1,26 @@
+<div class="content-section">
+    <form method="POST">
+        {% csrf_token %}
+        <fieldset class="form-group">
+            <legend class="border-bottom mb-4">Song Detail View</legend>
+                <p> Song Name: {{song.name}} <br>
+                Artist: {% for artist in song.artist.all %}
+                  <a href="{% url 'warehouse:listsongbyartist' artist.id %}"> {{artist}} </a>
+                {% endfor  %} <br>
+                Album: {{song.album}} <br>
+                Your Rating: {{current_rate}} <br>
+                Average Rating: {{avg_rate}} <br>
+                {{rate_form}}
+                </p>
+
+        </fieldset>
+    </form>
+</div>
+
+
+<!-- {% for artist in artists %}
+<a class="mr-2" href="{% url 'artist-detail' artist.art_name %}"> {{ artist.art_name }}</a>
+  <p> </p>
+{% endfor  %}
+
+                {{song.artist.all}}  -->

@@ -1,0 +1,6 @@
+<h1>{{ artist.name }}</h1>
+<ul>
+{% for song in all_song_list  %}
+    <li><a href="{% url 'warehouse:SongDetail' song.id %}">{{ song.name }}</a> - {{song.average_rating}} </li>
+{% endfor %}
+</ul>
