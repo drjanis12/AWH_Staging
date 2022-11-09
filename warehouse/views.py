@@ -21,6 +21,7 @@ def ListSongByArtist(request, artist_id):
         'artist': artist,}
     return render(request, 'warehouse/listsongbyartist.html', context)
 
+
 def SongDetailView(request, song_id):
     song = get_object_or_404(Song, pk=song_id)
     avg_rate = song.average_rating
