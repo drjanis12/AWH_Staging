@@ -17,8 +17,15 @@ def index(request):
 def ListSongByArtist(request, artist_id):
     artist = get_object_or_404(Artist, pk=artist_id)
     all_song_list = Song.objects.filter(artist__id=artist_id)
-    context = {'all_song_list': all_song_list,
-        'artist': artist,}
+    rating_dict = {}
+    for song in all_song_list:
+        if Rating.objects.filter(song=song, user=request.user).values('rate').first() is not None:
+            rating_dict[song] = Rating.objects.filter(song=song, user=request.user).values('rate').first()['rate']
+
+    context = {'artist': artist,
+    'all_song_list': all_song_list,
+    'rating_dict': rating_dict,}
+    #'songs_without_rating': songs_without_rating,}
     return render(request, 'warehouse/listsongbyartist.html', context)
 
 

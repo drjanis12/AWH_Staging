@@ -18,11 +18,15 @@ class Album(models.Model):
 class Song(models.Model):
     name = models.CharField(max_length=200)
     artist = models.ManyToManyField(Artist)
-    album = models.ForeignKey(Album, on_delete=models.CASCADE)
+    album = models.ForeignKey(Album, on_delete=models.CASCADE, related_name='songs')
 
     @property
     def average_rating(self):
-        return self.rating_set.all().aggregate(Avg('rate'))['rate__avg']
+        return round(self.rating_set.all().aggregate(Avg('rate'))['rate__avg'],2)
+
+    @property
+    def user_ratings(self):
+        return self.rating_set.filter(song=self, user=request.user)
 
     def __str__(self):
         return self.name

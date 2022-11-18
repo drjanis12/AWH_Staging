@@ -1,6 +1,27 @@
 <h1>{{ artist.name }}</h1>
-<ul>
-{% for song in all_song_list  %}
-    <li><a href="{% url 'warehouse:SongDetail' song.id %}">{{ song.name }}</a> - {{song.average_rating}} </li>
-{% endfor %}
-</ul>
+<h1>{{ test }}</h1>
+
+<table>
+  <thead>
+    <tr>
+      <th> Song </th>
+      <th> Album </th>
+      <th> Average Rating </th>
+      <th> User Rating </th>
+    </tr>
+  </thead>
+  <tbody>
+      {% for song in all_song_list  %}
+        <tr>
+          <td><a href="{% url 'warehouse:SongDetail' song.id %}">{{ song.name }}</a> </td>
+          <td>{{song.album}}</td>
+          <td>{{song.average_rating}}</td>
+          {% for key, value in rating_dict.items %}
+            {% if key == song %}
+          <td>{{value}}</td>
+            {% endif %}
+          {% endfor %}
+        </tr>
+      {% endfor %}
+  </tbody>
+</table>
