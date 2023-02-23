@@ -1,3 +1,6 @@
+{% extends 'homepage/base.html' %}
+{% block content %}
+
 <div class="content-section">
     <form method="POST">
         {% csrf_token %}
@@ -17,6 +20,7 @@
     </form>
 </div>
 
+{% endblock content%}
 
 <!-- {% for artist in artists %}
 <a class="mr-2" href="{% url 'artist-detail' artist.art_name %}"> {{ artist.art_name }}</a>

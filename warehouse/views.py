@@ -18,13 +18,22 @@ def ListSongByArtist(request, artist_id):
     artist = get_object_or_404(Artist, pk=artist_id)
     all_song_list = Song.objects.filter(artist__id=artist_id)
     rating_dict = {}
-    for song in all_song_list:
-        if Rating.objects.filter(song=song, user=request.user).values('rate').first() is not None:
-            rating_dict[song] = Rating.objects.filter(song=song, user=request.user).values('rate').first()['rate']
+    signin_msg = ''
+
+    if request.user.is_anonymous == False:
+        for song in all_song_list:
+            if Rating.objects.filter(song=song, user=request.user).values('rate').first() is not None:
+                rating_dict[song] = Rating.objects.filter(song=song, user=request.user).values('rate').first()['rate']
+
+    else:
+        for song in all_song_list:
+            rating_dict[song] = '-'
+        signin_msg = 'Please create account or log in to display user ratings'
 
     context = {'artist': artist,
     'all_song_list': all_song_list,
-    'rating_dict': rating_dict,}
+    'rating_dict': rating_dict,
+    'signin_msg': signin_msg}
     #'songs_without_rating': songs_without_rating,}
     return render(request, 'warehouse/listsongbyartist.html', context)
 
@@ -32,24 +41,27 @@ def ListSongByArtist(request, artist_id):
 def SongDetailView(request, song_id):
     song = get_object_or_404(Song, pk=song_id)
     avg_rate = song.average_rating
-    rating_obj = Rating.objects.get_or_create(user=request.user, song=song)
-    current_rate= rating_obj[0].rate
+    if request.user.is_anonymous == False:
+        rating_obj = Rating.objects.get_or_create(user=request.user, song=song)
+        current_rate= rating_obj[0].rate
+        if request.method== 'POST':
+            rate_form = RateForm(request.POST, instance=rating_obj[0])
+            if rate_form.is_valid():
 
-    if request.method== 'POST':
-        rate_form = RateForm(request.POST, instance=rating_obj[0])
-        if rate_form.is_valid():
+                save_rate_form = rate_form.save(commit=False)
+                save_rate_form.song = song
+                save_rate_form.rate = rate_form.cleaned_data.get('rate')
+                save_rate_form.user = request.user
+                save_rate_form.save()
 
-            save_rate_form = rate_form.save(commit=False)
-            save_rate_form.song = song
-            save_rate_form.rate = rate_form.cleaned_data.get('rate')
-            save_rate_form.user = request.user
-            save_rate_form.save()
+                messages.success(request, f'Your song has been saved!')
+                return redirect('/warehouse/', permanent=True)
 
-            messages.success(request, f'Your song has been saved!')
-            return redirect('/warehouse/', permanent=True)
-
+        else:
+            rate_form = RateForm(instance=Rating())
     else:
-        rate_form = RateForm(instance=Rating())
+        current_rate = '-'
+        rate_form = 'Please create account or log in to create user ratings'
 
     context = {'song' : song,'current_rate': current_rate, 'avg_rate': avg_rate, 'rate_form': rate_form,}
     return render(request, 'warehouse/SongDetail.html', context)

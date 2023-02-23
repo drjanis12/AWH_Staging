@@ -1,5 +1,9 @@
+{% extends 'homepage/base.html' %}
+{% block content %}
+
 <h1>{{ artist.name }}</h1>
-<h1>{{ test }}</h1>
+<p>{{ signin_msg}} </p>
+
 
 <table>
   <thead>
@@ -12,7 +16,7 @@
   </thead>
   <tbody>
       {% for song in all_song_list  %}
-        <tr>
+        <tr style="text-align: center"}>
           <td><a href="{% url 'warehouse:SongDetail' song.id %}">{{ song.name }}</a> </td>
           <td>{{song.album}}</td>
           <td>{{song.average_rating}}</td>
@@ -25,3 +29,5 @@
       {% endfor %}
   </tbody>
 </table>
+
+{% endblock content%}
