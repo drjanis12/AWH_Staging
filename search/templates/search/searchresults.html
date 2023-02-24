@@ -1,0 +1,37 @@
+{% extends 'homepage/base.html' %}
+{% block content %}
+  <left>
+    {% if searched %}
+      <h1> Songs </h1>
+      <br/>
+      {% for song in songs %}
+        {{song.name}} -
+        {% for key, value in artist_dict.items %}
+          {% if key == song %}
+        <td>{{value}}</td>
+          {% endif %}
+        {% endfor %}
+      <br/>
+      {% endfor %}
+
+
+      <h1> Artists </h1>
+        <br/>
+        {% for artist in artists %}
+          {{artist}}  <br/>
+        {% endfor %}
+
+        <h1> Albums </h1>
+        <br/>
+        {% for album in albums %}
+          {{album.name}}  <br/>
+        {% endfor %}
+
+    {% else %}
+      <h1> Your search for {{searched}} yielded no results </h1>
+    {% endif %}
+
+
+  </left>
+
+{% endblock %}
