@@ -28,7 +28,7 @@ def ListSongByAlbum(request, album_id):
     else:
         for song in all_song_list:
             rating_dict[song] = '-'
-        signin_msg = 'Please create account or log in to display user ratings'
+        signin_msg = 'Please create an account or log in to rate songs and follow artists'
 
     context = {'album': album,
     'all_song_list': all_song_list,
@@ -56,7 +56,7 @@ def ListSongByArtist(request, artist_id):
     else:
         for song in all_song_list:
             rating_dict[song] = '-'
-        signin_msg = 'Please create account or log in to display user ratings'
+        signin_msg = 'Please create an account or log in to rate songs and follow artists'
 
     context = {'artist': artist,
     'all_song_list': all_song_list,

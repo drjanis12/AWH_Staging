@@ -2,8 +2,9 @@
 {% block content %}
 
 <h1>{{ album.name }}</h1>
-<p> Average Rating: {{album.average_rating}}</p>
 <p>{{ signin_msg}} </p>
+<p> Average rating of {{album.average_rating}} based on ratings from {{album.rating_count}} users</p>
+
 
 
 <table>
