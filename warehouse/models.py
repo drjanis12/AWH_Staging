@@ -5,12 +5,22 @@ from django.db.models import Avg
 # Create your models here.
 class Artist(models.Model):
     name= models.CharField(max_length=200)
+    followers= models.ForeignKey(User, on_delete=models.DO_NOTHING, related_name='following', null=True)
+
 
     def __str__(self):
         return self.name
 
 class Album(models.Model):
     name= models.CharField(max_length=200)
+
+    @property
+    def average_rating(self):
+        songs_in_album= Song.objects.filter(album_id=self.id)
+        rating_list = [song.average_rating for song in songs_in_album]
+        return round(sum(rating_list)/len(rating_list),2)
+
+
 
     def __str__(self):
         return self.name

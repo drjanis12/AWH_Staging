@@ -14,6 +14,29 @@ def index(request):
     context = {'all_artist_list': all_artist_list}
     return render(request, 'warehouse/index.html', context)
 
+def ListSongByAlbum(request, album_id):
+    album = get_object_or_404(Album, pk=album_id)
+    all_song_list = Song.objects.filter(album__id=album_id)
+    rating_dict = {}
+    signin_msg = ''
+
+    if request.user.is_anonymous == False:
+        for song in all_song_list:
+            if Rating.objects.filter(song=song, user=request.user).values('rate').first() is not None:
+                rating_dict[song] = Rating.objects.filter(song=song, user=request.user).values('rate').first()['rate']
+
+    else:
+        for song in all_song_list:
+            rating_dict[song] = '-'
+        signin_msg = 'Please create account or log in to display user ratings'
+
+    context = {'album': album,
+    'all_song_list': all_song_list,
+    'rating_dict': rating_dict,
+    'signin_msg': signin_msg}
+    #'songs_without_rating': songs_without_rating,}
+    return render(request, 'warehouse/listsongbyalbum.html', context)
+
 def ListSongByArtist(request, artist_id):
     artist = get_object_or_404(Artist, pk=artist_id)
     all_song_list = Song.objects.filter(artist__id=artist_id)
@@ -24,6 +47,11 @@ def ListSongByArtist(request, artist_id):
         for song in all_song_list:
             if Rating.objects.filter(song=song, user=request.user).values('rate').first() is not None:
                 rating_dict[song] = Rating.objects.filter(song=song, user=request.user).values('rate').first()['rate']
+
+        if request.method == "POST":
+            if request.GET.get('follow') == 'follow':
+                artist.followers.add(request.user)
+                artist.save()
 
     else:
         for song in all_song_list:
@@ -65,6 +93,7 @@ def SongDetailView(request, song_id):
 
     context = {'song' : song,'current_rate': current_rate, 'avg_rate': avg_rate, 'rate_form': rate_form,}
     return render(request, 'warehouse/SongDetail.html', context)
+
 
 # def Rate(request, song_id):
 #     song = get_object_or_404(Song, pk=song_id)

@@ -4,7 +4,7 @@ from django.contrib.auth.forms import UserCreationForm
 from django.contrib import messages
 from .forms import UserRegisterForm, UserUpdateForm, ProfileUpdateForm
 from django.contrib.auth.decorators import login_required
-from .models import Profile
+from .models import Profile, Artist
 
 def register(request):
     if request.method== 'POST':
@@ -48,7 +48,10 @@ def profile_edit(request):
 @login_required
 def profile(request):
     template_name = 'profile'
-    followed_artists_list = Profile.objects.get(user=request.user).followed_artists
+    # followed_artists_list = request.user.followers_set.all()
+    followed_artists_list = Artist.objects.filter(followers=request.user)
+    # profile_obj = Profile.objects.get(user=request.user)
+    # followed_artists_list = profile_obj.followed_artists
     context = {
         'followed_artists_list': followed_artists_list,
     }

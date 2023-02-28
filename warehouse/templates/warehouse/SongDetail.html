@@ -8,9 +8,10 @@
             <legend class="border-bottom mb-4">Song Detail View</legend>
                 <p> Song Name: {{song.name}} <br>
                 Artist: {% for artist in song.artist.all %}
-                  <a href="{% url 'warehouse:listsongbyartist' artist.id %}"> {{artist}} </a>
+                  <a href="{% url 'warehouse:listsongbyartist' artist.id %}">{{artist}}</a>
                 {% endfor  %} <br>
-                Album: {{song.album}} <br>
+                Album:
+                  <a href="{% url 'warehouse:listsongbyalbum' song.album.id %}">{{song.album}}</a> <br>
                 Your Rating: {{current_rate}} <br>
                 Average Rating: {{avg_rate}} <br>
                 {{rate_form}}

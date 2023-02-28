@@ -1,21 +1,16 @@
 {% extends 'homepage/base.html' %}
 {% block content %}
 
-<h1>{{ artist.name }}
-  {% if user.is_authenticated %}
-  <form method='post' action='follow'>
-  <button class="btn btn-default" type="submit" value='follow'> Follow </button>
-  </form>
-  {% endif %}
-</h1>
+<h1>{{ album.name }}</h1>
+<p> Average Rating: {{album.average_rating}}</p>
 <p>{{ signin_msg}} </p>
 
 
-<table class="table">
-  <thead >
+<table>
+  <thead>
     <tr style="text-align: center">
       <th> Song </th>
-      <th> Album </th>
+      <th> Artist </th>
       <th> Average Rating </th>
       <th> User Rating </th>
     </tr>
@@ -24,7 +19,9 @@
       {% for song in all_song_list  %}
         <tr style="text-align: center">
           <td><a href="{% url 'warehouse:SongDetail' song.id %}">{{ song.name }}</a> </td>
-          <td><a href="{% url 'warehouse:listsongbyalbum' song.album.id %}">{{song.album}}</a></td>
+          <td>{% for artist in song.artist.all %}
+              <a href="{% url 'warehouse:listsongbyartist' artist.id %}">{{artist}}</a>
+            {% endfor  %}</td>
           <td>{{song.average_rating}}</td>
           {% for key, value in rating_dict.items %}
             {% if key == song %}
