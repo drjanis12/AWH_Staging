@@ -48,10 +48,16 @@ def ListSongByArtist(request, artist_id):
             if Rating.objects.filter(song=song, user=request.user).values('rate').first() is not None:
                 rating_dict[song] = Rating.objects.filter(song=song, user=request.user).values('rate').first()['rate']
 
+        #Follow/Unfollow Artist
         if request.method == "POST":
-            if request.GET.get('follow') == 'follow':
-                artist.followers.add(request.user)
-                artist.save()
+            current_user = request.user
+            action = request.POST['follow']
+            if action == 'unfollow':
+                current_user.following.remove(artist)
+            elif action == 'follow':
+                current_user.following.add(artist)
+            current_user.save()
+
 
     else:
         for song in all_song_list:

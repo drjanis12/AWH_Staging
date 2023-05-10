@@ -3,8 +3,14 @@
 
 <h1>{{ artist.name }}
   {% if user.is_authenticated %}
-  <form method='post' action='follow'>
-  <button class="btn btn-default" type="submit" value='follow'> Follow </button>
+  <form method='post'>
+      {% csrf_token %}
+      {% if artist in request.user.following.all %}
+        <button class="btn btn-outline-danger" name='follow' value='unfollow' type="submit">
+        Unfollow </button>
+      {% else %}
+        <button class="btn btn-outline-success" name='follow' value='follow' type="submit">
+          Follow </button>  {% endif %}
   </form>
   {% endif %}
 </h1>

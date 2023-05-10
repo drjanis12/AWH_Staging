@@ -5,7 +5,7 @@ from warehouse.models import Artist, Song, Album
 
 
 def SearchView(request):
-    if request.method=='POST':
+    if request.method=='POST' and 'login' not in request.POST:
         searched = request.POST['searched']
         songs = Song.objects.filter(name__icontains=searched)
         artists = Artist.objects.filter(name__icontains=searched)

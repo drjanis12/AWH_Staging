@@ -2,6 +2,7 @@ from django.db import models
 from django.core.validators import MaxValueValidator, MinValueValidator
 from django.contrib.auth.models import User
 from django.db.models import Avg
+
 # Create your models here.
 class Artist(models.Model):
     name= models.CharField(max_length=200)
@@ -53,6 +54,8 @@ class Song(models.Model):
     @property
     def user_ratings(self):
         return self.rating_set.filter(song=self, user=request.user)
+
+
 
     def __str__(self):
         return self.name
