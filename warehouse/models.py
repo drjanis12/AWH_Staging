@@ -12,12 +12,14 @@ class Artist(models.Model):
     def average_rating(self):
         songs_by_artist= Song.objects.filter(artist=self)
         rating_list = [song.average_rating for song in songs_by_artist]
-        return round(sum(rating_list)/len(rating_list),2)
-
+        if len(rating_list)>0:
+            return round(sum(rating_list)/len(rating_list),2)
+        else:
+            return 0
     @property
     def rating_count(self):
         songs_by_artist= Song.objects.filter(artist=self)
-        rating_list_count = len(Rating.objects.filter(song__in= songs_by_artist))
+        rating_list_count = len(Rating.objects.filter(song__in= songs_by_artist).exclude(rate__exact=0))
         return round(rating_list_count,2)
 
     def __str__(self):
@@ -35,7 +37,7 @@ class Album(models.Model):
     @property
     def rating_count(self):
         songs_in_album= Song.objects.filter(album_id=self.id)
-        rating_list_count = len(Rating.objects.filter(song__in= songs_in_album))
+        rating_list_count = len(Rating.objects.filter(song__in= songs_in_album).exclude(rate__exact=0))
         return round(rating_list_count,2)
 
 
@@ -49,13 +51,16 @@ class Song(models.Model):
 
     @property
     def average_rating(self):
-        return round(self.rating_set.all().aggregate(Avg('rate'))['rate__avg'],2)
-
+        try:
+            return round(self.rating_set.exclude(rate__exact=0).aggregate(Avg('rate'))['rate__avg'],2)
+        except:
+            return 0
     @property
     def user_ratings(self):
-        return self.rating_set.filter(song=self, user=request.user)
-
-
+        if self.rating_set.all().exists():
+            return self.rating_set.filter(song=self, user=request.user)
+        else:
+            return 0
 
     def __str__(self):
         return self.name
@@ -64,7 +69,7 @@ class Song(models.Model):
 class Rating(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     song = models.ForeignKey(Song, on_delete=models.CASCADE)
-    rate = models.PositiveSmallIntegerField(default=0, validators=[MinValueValidator(1), MaxValueValidator(10)])
+    rate = models.PositiveSmallIntegerField(blank=True, null=True, validators=[MinValueValidator(1), MaxValueValidator(10)])
 
     created = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)

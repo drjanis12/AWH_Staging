@@ -12,6 +12,9 @@
         <button class="btn btn-outline-success" name='follow' value='follow' type="submit">
           Follow </button>  {% endif %}
   </form>
+  <span style="float:right;">
+  <a class="btn btn-secondary btn-sm mt-1 mb-1" href="{% url 'warehouse:addSong' %}">Add new song</a>
+  </span>
   {% endif %}
 </h1>
 <p>{{ signin_msg}} </p>

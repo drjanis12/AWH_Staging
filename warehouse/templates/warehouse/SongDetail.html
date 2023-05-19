@@ -7,6 +7,9 @@
         <fieldset class="form-group">
             <legend class="border-bottom mb-4">Song Detail View</legend>
                 <p> Song Name: {{song.name}} <br>
+                  <span style="float:right;">
+                   <a class="btn btn-secondary btn-sm mt-1 mb-1" href="{% url 'warehouse:song-delete' song.id %}">Delete</a>
+                  </span>
                 Artist: {% for artist in song.artist.all %}
                   <a href="{% url 'warehouse:listsongbyartist' artist.id %}">{{artist}}</a>
                 {% endfor  %} <br>
@@ -27,5 +30,5 @@
 <a class="mr-2" href="{% url 'artist-detail' artist.art_name %}"> {{ artist.art_name }}</a>
   <p> </p>
 {% endfor  %}
-
+              <a class="btn btn-secondary btn-sm mt-1 mb-1" href="{% url 'warehouse:song-update' song.id %}">Update</a> 
                 {{song.artist.all}}  -->

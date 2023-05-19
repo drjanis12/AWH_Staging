@@ -1,10 +1,19 @@
 from django.shortcuts import get_object_or_404, render, redirect
+from django.contrib.auth.decorators import login_required
+from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib import messages
 from django.http import HttpResponse
 from .models import Artist, Album, Song, Rating
 from django.urls import reverse
 from django.views import generic
-from warehouse.forms import RateForm
+from warehouse.forms import RateForm, SongForm, ArtistForm, AlbumForm
+from django.views.generic import (
+    ListView,
+    DetailView,
+    CreateView,
+    UpdateView,
+    DeleteView
+)
 
 def success(request):
     return render(request, 'warehouse/success.html')
@@ -100,23 +109,48 @@ def SongDetailView(request, song_id):
     context = {'song' : song,'current_rate': current_rate, 'avg_rate': avg_rate, 'rate_form': rate_form,}
     return render(request, 'warehouse/SongDetail.html', context)
 
+@login_required
+def AddSong(request):
+    if request.method== 'POST':
+        # artist_form = ArtistForm(request.POST, prefix='art', instance=Artist())
+        # album_form = AlbumForm(request.POST, instance=Album(), prefix='alb')
+        song_form = SongForm(request.POST)
+        if song_form.is_valid():
+            cleaned_data = song_form.cleaned_data
+            #check if artist exists, if not - create new objct
+            art_name = cleaned_data.get('artist')
+            obj_art = Artist.objects.get_or_create(name=art_name)
+            if obj_art[1]=='True':
+                obj_art[0].save()
 
-# def Rate(request, song_id):
-#     song = get_object_or_404(Song, pk=song_id)
+            alb_name = cleaned_data.get('album')
+            obj_alb = Album.objects.get_or_create(name=alb_name)
+            if obj_alb[1]=='True':
+                obj_alb[0].save()
+
+            song_name = cleaned_data.get('name')
+            new_song = Song.objects.get_or_create(name=song_name, album=obj_alb[0])
+            new_song[0].artist.add(obj_art[0])
 
 
 
+            messages.success(request, f'Your song has been saved!')
+            return redirect('/', permanent=True)
+    else:
+        print('song invalid')
+        song_form = SongForm()
 
 
+    context = {
+         'song_form': song_form,
+    }
+    return render(request, 'warehouse/addSong.html', context)
 
-# class SongDetailView(generic.DetailView):
+# class SongUpdateView(LoginRequiredMixin, UpdateView):
 #     model = Song
-#     template_name = 'warehouse/SongDetail.html'
+#     fields = ['name', 'album','artist',]
 
 
-# def vote(request, song_id):
-#     return HttpResponse("You're voting on song %s." % song_id)
-
-# def results(request, question_id):
-#     response = "You're looking at the results of question %s."
-#     return HttpResponse(response % question_id)
+class SongDeleteView(LoginRequiredMixin, DeleteView):
+    model = Song
+    success_url = '/'
